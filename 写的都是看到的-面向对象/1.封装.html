@@ -1,0 +1,151 @@
+<!--
+ * @Author: 刘林
+ * @Date: 2020-12-18 15:54:19
+ * @LastEditors: 刘林
+ * @LastEditTime: 2020-12-19 14:51:34
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>写的都是看到的-面向对象</title>
+</head>
+
+<body>
+  <script>
+
+    // 创建 对象的两种方式 
+    // 通过this变量为对象添加属性或者方法
+    var Book = function (id, bookname, price) {
+      this.id = id;
+      this.bookname = bookname;
+      this.price = price;
+    }
+
+    // 通过对对象原型进行赋值
+    Book.prototype.display = function () { }; // 一一为对象原型赋值
+
+    Book.prototype = { display: function () { } } // 通过对象对对象原型进行赋值
+
+    // 两者区别
+    // 通过this添加的属性和方法是在当前对象上进行添加的，
+    // 通过prototype进行添加的是在对象的原型上进行添加的，对象查找属性通过prototype进行一层一层查找属性或者方法
+
+
+    // constructor 
+    // constructor 是一个属性，在对象或者函数进行创建是，prototype对象会创建一个constructor属性，constructor属性指向
+    // 整个对象或者函数
+
+    // 属性与方法的封装
+
+    var Book = function (id, bookname, price) {
+      // 私有属性
+      var num = 1;
+
+      // 私有方法
+      function checkId() {
+
+      }
+
+      // 特权方法
+      this.getName = function () { console.log('getName') };
+      this.getPrice = function () { console.log('getPrice') };
+      this.setName = function () { console.log('setName') };
+      this.setPrice = function () { console.log('setPrice') };
+
+      // 共有属性
+      this.id = id;
+      this.bookname = bookname
+      this.price = price;
+
+      // 共有方法
+      this.copy = function () { console.log('copy'); }
+
+      // 构造器
+      this.setName();
+      this.setPrice();
+    }
+
+    const book = new Book('1', 'javascript设计模式', 38);
+
+
+    Book.prototype.isChinese = true; // prototype里的属性是对象的共有属性和共有方法
+    Book.prototype.resetTime = function () { console.log('reset Time') };
+
+    Book.prototype = {
+      isChinese: true,
+      resetTime: function () { console.log('reset Time') }
+    }
+
+    // 通过new关键字创建的对象实质是对新对象this的不断赋值，
+    // 并将prototype指向类的prototype所指的对象，而类的构造函数外面通过点语法
+    // 的属性方法是不会添加到新创建的对象上去的
+
+
+    // 猜想 面试 手动实现一个new 
+    // 通过上面描述可以知道一下步骤
+    // 1.创建一个新对象，
+    // 2.对this进行赋值，将prototype指向类的prototype所指的对象上去（进行this赋值）
+    function renew(fn, ...args) {
+      // 创建对象的两种方式 
+
+      // var obj = {};  这种是直接创建的一个空对象，__proto__指向的Object
+      const obj = Object.create(fn.prototype) //  这种方式是用过Object对象的方式创建一个fn为原型（prototype）的对象；
+
+      // 进行this赋值，并将新赋值的对象返回
+      let result = fn.apply(obj, args);
+
+      // 返回新对象
+      return typeof result === 'object' ? result : obj;
+    }
+
+
+    const newbook = renew(Book, '1', 'javascript');
+
+
+    // 闭包
+
+    // 通过闭包将类的静态变量进行私有化，避免干扰
+    // 名称 IIFE -> 立即执行函数
+    // 闭包是有权访问另外一个函数作用域中变量的函数，即在一个函数内部创建另外一个函数。
+    // 我们将这个闭包作为创建对象的构造函数，这样它既是闭包有事可实例对象的函数。即可
+    // 访问到类函数作用域中的变量。
+    var Book = (function () {
+      var bookNum = 0;
+      function checkBook(name) { }
+      return function (newId, newName, newPrice) {
+        var name, price;
+        // 私有方法
+        function checkId(id) { }
+        //特权方法
+        this.getName = function () { };
+        this.getPrice = function () { };
+        this.setName = function () { };
+        this.setPrice = function () { };
+        // 共有属性
+        this.name = newName;
+        this.id = newId;
+        // 共有方法
+        this.copy = function () { };
+        bookNum++;
+        if (bookNum > 100) {
+          throw new Error('max book num 100');
+        }
+        // 构造器
+        this.setName(name);
+        this.setPrice(price);
+      }
+    })();
+
+    Book.prototype = {
+      isJsBook: false, // 静态共有属性
+      display: function () { } // 静态共有方法
+    }
+
+    const book3 = new Book();
+  </script>
+</body>
+
+</html>
