@@ -1,0 +1,114 @@
+<!--
+ * @Author: 刘林
+ * @Date: 2020-12-20 15:36:03
+ * @LastEditors: 刘林
+ * @LastEditTime: 2020-12-20 16:22:07
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多继承</title>
+</head>
+
+<body>
+  <script>
+    // 多继承
+    // 由于JavaScript中继承是依赖于原型prototype链实现的，只有一条原型链，理论上是不能实现多继承，可以通过
+    // 一些方法来实现多继承的方式。
+
+    // 单继承 属性复制 这是一个浅拷贝的方式
+    var extend = function (target, source) {
+      for (var property in source) {
+        target[property] = source[property];
+      }
+      return target;
+    }
+
+    // 单继承 属性深拷贝
+    var deepExtend = function (target, source) {
+      for (var property in source) {
+        if (typeof source[property] === 'object') {
+          if (Object.prototype.toString.call(source[property]) === "[object Array]") {
+            target[property] = source[property];
+          } else {
+            deepExtend(target, source[property])
+          }
+        } else {
+          target[property] = source[property];
+        }
+      }
+      return target;
+    }
+
+    // 测试代码
+    var book = {
+      name: 'JavaScript设计模式',
+      alike: ['css', 'html', 'JavaScript'],
+      sayName: function () {
+        console.log(this.name)
+      }
+    }
+
+    var anotherBook = {
+      color: 'blue'
+    }
+
+    extend(anotherBook, book);
+    console.log(anotherBook.name); // javascript 设计模式
+    console.log(anotherBook.alike); // ["css", "html", "JavaScript"]
+
+    anotherBook.alike.push('ajax');
+    anotherBook.name = '设计模式';
+    console.log(anotherBook.name); // 设计模式
+    console.log(anotherBook.alike); // ["css", "html", "JavaScript", "ajax"]
+    console.log(book.name); // JavaScript设计模式
+    console.log(book.alike); // ["css", "html", "JavaScript", "ajax"]
+    // deepBook.sayName(); // TypeError: Cannot read property 'sayName'
+
+    var deepBook = {
+      deep: true
+    }
+    deepExtend(deepBook, book);
+
+    console.log(deepBook.name);
+    console.log(deepBook.alike);
+    deepBook.sayName();
+
+    // 多继承 属性复制
+    var mix = function () {
+      let i = 1,
+        len = arguments.length,
+        target = arguments[0],
+        arg;
+      for (; i < len; i += 1) {
+        arg = arguments[i];
+        for (let property in arg) {
+          target[property] = arg[property]
+        }
+      }
+      console.log(target);
+      return target;
+    }
+
+    // 将多继承绑定Object
+    Object.prototype.mix = mix;
+
+    var cssBook = {
+      css: true
+    }
+
+    var htmlBook = {
+      html: true,
+    }
+    let webBook = {};
+    console.log(webBook);
+    webBook.mix(webBook, cssBook, htmlBook);
+    console.log(webBook);
+  </script>
+</body>
+
+</html>
