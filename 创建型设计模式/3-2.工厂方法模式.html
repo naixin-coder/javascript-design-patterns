@@ -1,0 +1,92 @@
+<!--
+ * @Author: 刘林
+ * @Date: 2020-12-21 21:08:05
+ * @LastEditors: 刘林
+ * @LastEditTime: 2020-12-21 21:44:43
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>给我一张名片-工厂方法模式</title>
+</head>
+
+<body>
+  <script>
+    // 工厂方法模式
+    // 通过对产品类的抽象使其创建业务主要主责用于创建多类产品的实例。
+
+
+    // 创建Java学科类-> 绿色字体
+    var Java = function (content) {
+      this.content = content;
+      (function (content) {
+        var div = document.createElement('div');
+        div.innerHTML = content;
+        div.style.color = 'green';
+        document.getElementById('container').appendChild(div);
+      })(content);
+    }
+
+    // 创建PHP学科类
+    var Php = function () {
+      this.content = content;
+      (function (content) {
+        var div = document.createElement('div');
+        div.innerHTML = content;
+        div.style.color = 'yellow';
+        div.style.color = 'red';
+        document.getElementById('container').appendChild(div);
+      })(content);
+    }
+
+    function JobFactory(type, content) {
+      switch (type) {
+        case 'java': return new Java(content);
+        case 'Php': return new Php(content);
+      }
+    }
+
+    // 安全模式类 -> 避免书写是没有 new 
+    var Demo = function () {
+      if (!(this instanceof Demo)) {
+        return new Demo();
+      }
+    }
+    var d = Demo();
+    d.show();
+
+    // 创建安全的工厂方法
+    var Factory = function (type, content) {
+      if (this instanceof Factory) {
+        var s = new this[type](content);
+        return s;
+      } else {
+        return new Factory(type, content);
+      }
+    }
+
+    // 测试代码
+    Factory.prototype = {
+      Java: Java(content),
+      Php: Php(content),
+    };
+
+    var data = [
+      { type: 'Java', content: 'Java哪家强' },
+      { type: 'Php', content: 'Php哪家强' },
+    ];
+
+    for (var i = data.lenght; i >= 0; i--) {
+      Factory(data[i].type, data[i], content);
+    }
+    // 对于创建多类对象，前面学过的简单工厂模式就不太适用了，这是简单的工厂模式的应用局限，
+    // 当然这是工厂方法模式的价值所在，通过工厂方法模式我们可以轻松创建多个类的实例对象，这
+    // 样工厂方法对象在创建对象的方式也避免了使用者之间的耦合，用户不必关心创建该对象的具体类
+    // 只需调用工厂方法即可。
+  </script>
+</body>
+
+</html>
